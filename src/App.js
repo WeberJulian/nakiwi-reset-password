@@ -22,19 +22,22 @@ class AppRouter extends Component{
     super(props)
     this.state = {
       route: "ResetPassword",
-      email: "julian.weber@hotmail.fr"
+      email: ""
     }
   }
   navigate(route){
     this.setState({route: route})
   }
+  updateEmail(email){
+    this.setState({email: email})
+  }
   render(){
     switch(this.state.route){
       case("ResetPassword"):
-        return <ResetPassword navigate={this.navigate.bind(this)}/>;
+        return <ResetPassword updateEmail={this.updateEmail.bind(this)} navigate={this.navigate.bind(this)}/>;
         break;
       case("ChangePassword"):
-        return <ChangePassword email={this.state.email}  navigate={this.navigate.bind(this)}/>;
+        return <ChangePassword email={this.state.email} navigate={this.navigate.bind(this)}/>;
         break;
       case("Validation"):
         return <h1>Everything went well</h1>;
@@ -60,6 +63,7 @@ class ResetPassword extends Component {
   }
   handleButtonPress(){
     this.setState({loading: true})
+    this.props.updateEmail(this.state.email)
     this.sendEmail(this.state.email)
   }
   handleEmailChange(event){
