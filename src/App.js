@@ -17,21 +17,36 @@ const params = {
 	}
 };
 
-const AppRouter = () => (
-  <Router>
-    <div>
-      <Route path="/Reset-Password/" component={ResetPassword} />
-      <Route path="/Change-Password/" component={ChangePassword} />
-      <Route exact path="/" render={() => (
-        <Redirect to="/Reset-Password"/>
-      )}/>
-    </div>
-  </Router>
-);
+class AppRouter extends Component{
+  constructor(props){
+    super(props)
+    this.state = {
+      route: "ResetPassword",
+      email: "julian.weber@hotmail.fr"
+    }
+  }
+  navigate(route){
+    this.setState({route: route})
+  }
+  render(){
+    switch(this.state.route){
+      case("ResetPassword"):
+        return <ResetPassword navigate={this.navigate.bind(this)}/>;
+        break;
+      case("ChangePassword"):
+        return <ChangePassword email={this.state.email}  navigate={this.navigate.bind(this)}/>;
+        break;
+      case("Validation"):
+        return <h1>Everything went well</h1>;
+        break;
+      default:
+        return <h1>Error</h1>;
+        break;
+    }
+  }
+}
 
 export default AppRouter;
-
-
 
 class ResetPassword extends Component {
   constructor(props){
@@ -66,7 +81,7 @@ class ResetPassword extends Component {
     if(status == "OK"){
       this.setState({emailInvalid: false})
       this.setState({emailValid: true})
-      this.props.history.push({pathname: '/Change-Password/', state: {email: this.state.email}})
+      this.props.navigate("ChangePassword")
     }
     else {
       this.setState({emailInvalid: true})
@@ -90,31 +105,28 @@ class ResetPassword extends Component {
   }
 }
 
-
-
-
 class ChangePassword extends Component {
   constructor(props){
     super(props)
     this.state = {
       email: "",
       password: "",
-      emailInvalid: false,
-      emailValid: false,
+      code: undefined,
+      codeInvalid: false,
       loading: false
     }
   }
   componentDidMount(){
-    if(this.props.location.state != undefined){
-      this.setState({email: this.props.location.state.email})
+    if(this.props.email != undefined){
+      this.setState({email: this.props.email})
     }
     else{
-      this.props.history.push({pathname: '/Reset-Password/'})
+      this.props.navigate("ResetPassword")
     }
   }
   handleButtonPress(){
     this.setState({loading: true})
-    this.sendPassword(this.state.email)
+    this.sendPassword()
   }
   handleEmailChange(event){
     this.setState({email: event.target.value})
@@ -122,11 +134,17 @@ class ChangePassword extends Component {
   handlePasswordChange(event){
     this.setState({password: event.target.value})
   }
-  async sendEmail(email){
+  handleCodeChange(event){
+    this.setState({code: event.target.value})
+    this.setState({codeInvalid: false})
+  }
+  async sendPassword(){
 		var body = {
-			email: email.toLowerCase(),
+      email: this.state.email.toLowerCase(),
+      code: this.state.code,
+      password: this.state.password
 		};
-		var res = await fetch('https://nakiwi-test-dev.glitch.me/sendResetToEmail', {
+		var res = await fetch('https://nakiwi-test-dev.glitch.me/changePassword', {
 			...params,
 			body: JSON.stringify(body)
     });
@@ -136,13 +154,10 @@ class ChangePassword extends Component {
   handleResponse(status){
     this.setState({loading: false})
     if(status == "OK"){
-      this.setState({emailInvalid: false})
-      this.setState({emailValid: true})
-      window.location = "https://nakiwi.co.uk/"
+      this.props.navigate("Validation")
     }
     else {
-      this.setState({emailInvalid: true})
-      this.setState({emailValid: false})
+      this.setState({codeInvalid: true})
     }
   }
   render() {
@@ -153,9 +168,8 @@ class ChangePassword extends Component {
           <h3>{this.state.email}</h3>
           <Form inline className="Center-content"> 
             <Label for="exampleEmail" className="mr-sm-2">Code</Label>
-            <Input valid={this.state.emailValid} invalid={this.state.emailInvalid} className="Email" type="email" name="email" id="exampleEmail" placeholder="123456" onChange={this.handleEmailChange.bind(this)}/>
-            
-            {this.state.emailInvalid ? <FormFeedback>This email is not on our servers !</FormFeedback> : <div/>}
+            <Input valid={this.state.emailValid} invalid={this.state.codeInvalid} className="Email" type="number" name="email" id="exampleEmail" placeholder="123456" onChange={this.handleCodeChange.bind(this)}/>
+            {this.state.codeInvalid ? <FormFeedback>This code is not valid</FormFeedback> : <div/>}
           </Form>
           <Form inline className="Center-content"> 
             <Label for="exampleEmail" className="mr-sm-2">New password</Label>
