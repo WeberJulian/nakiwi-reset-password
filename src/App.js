@@ -20,6 +20,9 @@ const params = {
 const AppRouter = () => (
   <Router>
     <div>
+      <Route exact path="/" render={() => (
+        <Redirect to="/Reset-Password"/>
+      )}/>
       <Route path="/Reset-Password/" component={ResetPassword} />
       <Route path="/Change-Password/" component={ChangePassword} />
     </div>
