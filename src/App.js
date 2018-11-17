@@ -66,7 +66,8 @@ class ResetPassword extends Component {
     this.props.updateEmail(this.state.email)
     this.sendEmail(this.state.email)
   }
-  handleSubmit(){
+  handleSubmit(event){
+    event.preventDefault()
     this.setState({loading: true})
     this.props.updateEmail(this.state.email)
     this.sendEmail(this.state.email)
@@ -133,7 +134,8 @@ class ChangePassword extends Component {
       this.props.navigate("ResetPassword")
     }
   }
-  handleSubmit(){
+  handleSubmit(event){
+    event.preventDefault()
     this.setState({loading: true})
     this.sendPassword()
   }
