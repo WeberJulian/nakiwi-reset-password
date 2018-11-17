@@ -66,6 +66,11 @@ class ResetPassword extends Component {
     this.props.updateEmail(this.state.email)
     this.sendEmail(this.state.email)
   }
+  handleSubmit(){
+    this.setState({loading: true})
+    this.props.updateEmail(this.state.email)
+    this.sendEmail(this.state.email)
+  }
   handleEmailChange(event){
     this.setState({email: event.target.value})
   }
@@ -97,7 +102,7 @@ class ResetPassword extends Component {
       <div className="App">
         <Jumbotron className="Center-content">
           <h1 className="display-3">Reset your password</h1>
-          <Form inline className="Center-content"> 
+          <Form inline className="Center-content" onSubmit={this.handleSubmit.bind(this)}> 
             <Label for="exampleEmail" className="mr-sm-2">Email</Label>
             <Input valid={this.state.emailValid} invalid={this.state.emailInvalid} className="Email" type="email" name="email" id="exampleEmail" placeholder="something@idk.cool" onChange={this.handleEmailChange.bind(this)}/>
             {this.state.loading ? <Dots/> : <Button onClick={this.handleButtonPress.bind(this)}>Reset</Button>}
@@ -127,6 +132,10 @@ class ChangePassword extends Component {
     else{
       this.props.navigate("ResetPassword")
     }
+  }
+  handleSubmit(){
+    this.setState({loading: true})
+    this.sendPassword()
   }
   handleButtonPress(){
     this.setState({loading: true})
@@ -170,12 +179,12 @@ class ChangePassword extends Component {
         <Jumbotron className="Center-content">
           <h1 className="display-3">Change your password</h1>
           <h3>{this.state.email}</h3>
-          <Form inline className="Center-content"> 
+          <Form inline className="Center-content" onSubmit={()=>{}}> 
             <Label for="exampleEmail" className="mr-sm-2">Code</Label>
             <Input valid={this.state.emailValid} invalid={this.state.codeInvalid} className="Email" type="number" name="email" id="exampleEmail" placeholder="123456" onChange={this.handleCodeChange.bind(this)}/>
             {this.state.codeInvalid ? <FormFeedback>This code is not valid</FormFeedback> : <div/>}
           </Form>
-          <Form inline className="Center-content"> 
+          <Form inline className="Center-content" onSubmit={this.handleSubmit.bind(this)}> 
             <Label for="exampleEmail" className="mr-sm-2">New password</Label>
             <Input className="Password" type="password" name="password" id="examplePassword" placeholder="password" onChange={this.handlePasswordChange.bind(this)}/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
